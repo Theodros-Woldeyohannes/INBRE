@@ -1,0 +1,34 @@
+---
+title: "PA_data_combiner"
+author: "Theodros Woldeyohannes"
+format: html
+editor: visual
+---
+
+```{r}
+#Read in individual sensor data. Change file path as needed.
+CA1 <- read.csv("C:/Users/jacks/Documents/UNM/P50/INBRE/Git Repo/PurpleAir Download 12-3-2024/176247 2024-07-22 2024-12-03 0-Minute Average.csv")
+CA2 <- read.csv("C:/Users/jacks/Documents/UNM/P50/INBRE/Git Repo/PurpleAir Download 12-3-2024/176209 2024-07-22 2024-12-03 0-Minute Average.csv")
+CA3 <- read.csv("C:/Users/jacks/Documents/UNM/P50/INBRE/Git Repo/PurpleAir Download 12-3-2024/185075 2024-07-22 2024-12-03 0-Minute Average.csv")
+CA4 <- read.csv("C:/Users/jacks/Documents/UNM/P50/INBRE/Git Repo/PurpleAir Download 12-3-2024/176215 2024-07-22 2024-12-03 0-Minute Average.csv")
+
+```
+
+```{r}
+#Add sensor ID column
+CA1$sensor <- "CA-1"
+CA2$sensor <- "CA-2"
+CA3$sensor <- "CA-3"
+CA4$sensor <- "CA-4"
+
+```
+
+```{r}
+#Combine data into single table
+data_comb <- rbind(CA1, CA2, CA3, CA4)
+```
+
+```{r}
+#Write data to .csv. Change file path and name as needed.
+write.csv(data_comb, "C:/Users/jacks/Documents/UNM/P50/INBRE/Git Repo/all_data_12324.csv")
+```

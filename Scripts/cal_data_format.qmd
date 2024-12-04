@@ -1,0 +1,303 @@
+---
+title: "Cal_data_format deming"
+format: pdf
+editor: visual
+---
+
+### Load Libraries into R Environment
+
+```{r}
+library(lubridate)
+library(dplyr)
+library(tidyverse)
+library(RODBC)
+library(reshape2)
+library(ggplot2)
+library(showtext)
+showtext_auto()
+library(GGally)
+```
+
+### Read in sensor data
+
+```{r}
+#Read in each day's data as separate dataframe per sensor.
+wb <- "C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/PA Test Combined Deming-20241017T173437Z-001/PA Test Combined Deming/GC9_4C97 All Deming.xlsb" #change filepath as needed, separate spreadsheet for each sensor
+con2 <- odbcConnectExcel2007(wb)
+day1 <- sqlFetch(con2, "20240311")
+day2 <- sqlFetch(con2, "20240312")
+day3 <- sqlFetch(con2, "20240313")
+day4 <- sqlFetch(con2, "20240314")
+day5 <- sqlFetch(con2, "20240315")
+day6 <- sqlFetch(con2, "20240316")
+day7 <- sqlFetch(con2, "20240317")
+day8 <- sqlFetch(con2, "20240318")
+
+
+
+```
+
+### For each sensor, merge daily dataframes into single dataframe
+
+```{r}
+gc9 <- rbind(day1,day2,day3,day4,day5,day6,day7,day8)
+```
+
+### Write combined sensor dataframe to csv
+
+```{r}
+write.csv(gc9, "C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC9/GC9.csv", row.names=FALSE) #change filepath as needed
+```
+
+### Subset for data we want (time and pm2.5 concentration)
+
+```{r}
+gc9f <- gc9[c("UTCDateTime", "pm2_5_atm")]
+```
+
+### Format column names
+
+```{r}
+colnames(gc9f) <- c("time", "GC9_PM2_5")
+```
+
+### Write formatted sensor dataframe to csv
+
+```{r}
+write.csv(gc9f, "C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC9/GC9pm.csv", row.names=FALSE) #change filepath as needed
+```
+
+### Generate time sequence
+
+```{r}
+#create time sequence of every second from 2024-03-11 to 2024-03-19 
+time_sequence <- seq(
+  from = as.POSIXct("2024-03-11 00:00:00", tz = "UTC"),
+  to = as.POSIXct("2024-03-19 00:00:00", tz = "UTC"),
+  by = "sec"
+)
+```
+
+### Turn time sequence into dataframe
+
+```{r}
+time_sequence_df <- as.data.frame(time_sequence)
+```
+
+### Read in formatted sensor data
+
+```{r}
+GC1 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC1/GC1.csv")
+GC2 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC2/GC2pm.csv")
+GC3 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC3/GC3pm.csv")
+GC4 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC4/GC4pm.csv")
+GC5 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC5/GC5pm.csv")
+GC6 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC6/GC6pm.csv")
+GC7 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC7/GC7pm.csv")
+GC8 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC8/GC8pm.csv")
+GC9 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC9/GC9pm.csv")
+GC10 <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/GC10/GC10pm.csv")
+```
+
+### Put sensor dataframes into list
+
+```{r}
+my_data <- list(GC1, GC2, GC3, GC4, GC5, GC6, GC7, GC8, GC9, GC10)
+```
+
+### Format column names so timestamp mataches
+
+```{r}
+colnames(time_sequence_df) <- c("timestamp_datetime")
+```
+
+### Format time stamps
+
+```{r}
+#loop through list of sensor dataframes, format timestamp column from character to date-time format
+for (x in seq_along(my_data)) {
+  df <- my_data[[x]]
+  df$timestamp_clean <- sub("z$", "+0000", df$time)
+  df$timestamp_datetime <- as.POSIXct(df$timestamp_clean, format = "%Y/%m/%dT%H:%M:%S%z", tz = "UTC")
+  my_data[[x]] <- df
+  
+}
+```
+
+### Join each sensor data to time series so all records are temporally concurrent
+
+```{r}
+datacomb <- left_join(time_sequence_df, my_data[[1]], by="timestamp_datetime")
+datacomb1 <- left_join(datacomb, my_data[[2]], by="timestamp_datetime")
+datacomb2 <- left_join(datacomb1, my_data[[3]], by="timestamp_datetime")
+datacomb3 <- left_join(datacomb2, my_data[[4]], by="timestamp_datetime")
+datacomb4 <- left_join(datacomb3, my_data[[5]], by="timestamp_datetime")
+datacomb5 <- left_join(datacomb4, my_data[[6]], by="timestamp_datetime")
+datacomb6 <- left_join(datacomb5, my_data[[7]], by="timestamp_datetime")
+datacomb7 <- left_join(datacomb6, my_data[[8]], by="timestamp_datetime")
+datacomb8 <- left_join(datacomb7, my_data[[9]], by="timestamp_datetime")
+datacomb9 <- left_join(datacomb8, my_data[[10]], by="timestamp_datetime")
+```
+
+### Subset data for records we want (time, PM2.5 for each sensor)
+
+```{r}
+datacomb_format <- subset(datacomb9, select = c(timestamp_datetime, GC1_PM2_5, GC2_PM2_5, GC3_PM2_5, GC4_PM2_5, GC5_PM2_5, GC6_PM2_5, GC7_PM2_5, GC8_PM2_5, GC9_PM2_5, GC10_PM2_5))
+```
+
+### Remove rows where there is no record from any sensor
+
+```{r}
+datacomb_format_clean <- datacomb_format[!with(datacomb_format,is.na(GC1_PM2_5)& is.na(GC2_PM2_5)& is.na(GC3_PM2_5)& is.na(GC4_PM2_5)& is.na(GC5_PM2_5)& is.na(GC6_PM2_5)& is.na(GC7_PM2_5)& is.na(GC8_PM2_5)& is.na(GC9_PM2_5)& is.na(GC10_PM2_5)),]
+```
+
+### Write cleaned and formatted data to csv
+
+```{r}
+write.csv(datacomb_format_clean, "C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/datacomb.csv")
+```
+
+```{r}
+datacomb_format_clean <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/datacomb.csv")
+```
+
+### Transpose data for plotting
+
+```{r}
+#Transpose data to long format so we have 3 columnsfor plotting (time, sensor ID, and PM2.5)
+datacomb_format_clean_long <- melt(datacomb_format_clean, id.vars = "timestamp_datetime", variable.name = "variable", value.name = "value")
+```
+
+### Plot data
+
+```{r}
+ggplot(datacomb_format_clean_long, aes(timestamp_datetime, value, group = variable, color = variable)) +
+  geom_line(data=datacomb_format_clean_long[!is.na(datacomb_format_clean_long$value),])
+```
+
+Plot indicates that there is slight variance, but overall strong agreement between sensors across time.
+
+```{r}
+#Data summary
+summary(datacomb_format_clean)
+```
+
+Slight variance in reported PM2.5 values. Relative strong agreeement in mean recorded PM2.5, with larger variance observed in max recorded value (+- 10 ug/m3 PM2.5).
+
+### Aggregate data to 10 minutes
+
+```{r}
+datacomb_agg <- datacomb_format_clean %>%
+  group_by(time = floor_date(timestamp_datetime, '10 minutes')) %>%
+  summarize(GC1_PM2_5 = mean(GC1_PM2_5, na.rm = TRUE), GC2_PM2_5 = mean(GC2_PM2_5, na.rm = TRUE), GC3_PM2_5 = mean(GC3_PM2_5, na.rm = TRUE), GC4_PM2_5 = mean(GC4_PM2_5, na.rm = TRUE), GC5_PM2_5 = mean(GC5_PM2_5, na.rm = TRUE), 
+            GC6_PM2_5 = mean(GC6_PM2_5, na.rm = TRUE), GC7_PM2_5 = mean(GC7_PM2_5, na.rm = TRUE), GC8_PM2_5 = mean(GC8_PM2_5, na.rm = TRUE), GC9_PM2_5 = mean(GC9_PM2_5, na.rm = TRUE), GC10_PM2_5 = mean(GC10_PM2_5, na.rm = TRUE))
+```
+
+```{r}
+write.csv(datacomb_agg, "C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/datacomb_agg.csv")
+```
+
+```{r}
+datacomb_agg_long <- melt(datacomb_agg, id.vars = "time", variable.name = "variable", value.name = "value")
+```
+
+```{r}
+ggplot(datacomb_agg_long, aes(time, value, group = variable, color = variable)) +
+  geom_line(data=datacomb_agg_long[!is.na(datacomb_agg_long$value),])
+```
+
+```{r}
+#Print head of data table
+head(datacomb_agg)
+```
+
+Note slight variance (+-1 ug/m3 PM2.5) between sensors.
+
+### Aggregate data to 1 hour average
+
+```{r}
+datacomb_agg_1hr <- datacomb_format_clean %>%
+  group_by(time = floor_date(timestamp_datetime, '1 hour')) %>%
+  summarize(GC1_PM2_5 = mean(GC1_PM2_5, na.rm = TRUE), GC2_PM2_5 = mean(GC2_PM2_5, na.rm = TRUE), GC3_PM2_5 = mean(GC3_PM2_5, na.rm = TRUE), GC4_PM2_5 = mean(GC4_PM2_5, na.rm = TRUE), GC5_PM2_5 = mean(GC5_PM2_5, na.rm = TRUE), 
+            GC6_PM2_5 = mean(GC6_PM2_5, na.rm = TRUE), GC7_PM2_5 = mean(GC7_PM2_5, na.rm = TRUE), GC8_PM2_5 = mean(GC8_PM2_5, na.rm = TRUE), GC9_PM2_5 = mean(GC9_PM2_5, na.rm = TRUE), GC10_PM2_5 = mean(GC10_PM2_5, na.rm = TRUE))
+```
+
+```{r}
+datacomb_agg_long_1hr <- melt(datacomb_agg_1hr, id.vars = "time", variable.name = "variable", value.name = "value")
+```
+
+```{r}
+ggplot(datacomb_agg_long_1hr, aes(time, value, group = variable, color = variable)) +
+  geom_line(data=datacomb_agg_long_1hr[!is.na(datacomb_agg_long_1hr$value),])
+```
+
+```{r}
+datacomb_agg <- read.csv("C:/Users/jacks/Documents/UNM/P30/AIRWISE/Calibration_data/Deming_analysis/datacomb_agg.csv")
+```
+
+
+### Test for sensor agreement through pairwise correlations
+
+```{r}
+vars <- c(
+  "GC1_PM2_5", "GC2_PM2_5", "GC3_PM2_5", "GC4_PM2_5", "GC5_PM2_5", "GC6_PM2_5", "GC7_PM2_5", "GC8_PM2_5", "GC9_PM2_5", "GC10_PM2_5"
+)
+
+datacomb_sub <- datacomb_agg[, c(vars)]
+
+p_cor <- ggpairs(
+  datacomb_sub,
+  upper = list(continuous = wrap("points", alpha = 0.2, size = 0.5)),
+  lower = list(continuous = "cor")
+)
+
+print(p_cor)
+```
+
+Pairwise correlation tests indicate high precision across sensors.
+
+```{r}
+datacomb_sub1 <- datacomb_sub + 0.00001
+```
+
+```{r}
+datacomb_sub_log <- log10(datacomb_sub1)
+```
+
+```{r}
+# GGally::ggpairs(
+# 	x
+# 	#fix for font rendering
+# 	, upper = list(
+# 		continuous = GGally::wrap("cor", family="sans")
+# 	)
+# )
+```
+
+```{r}
+p_cor <- ggpairs(
+  datacomb_sub_log,
+  upper = list(continuous = wrap("points", alpha = 0.2, size = 0.5)),
+  lower = list(continuous = "cor")
+)
+
+print(p_cor)
+```
+```{r}
+datacomb_sub2 <- (datacomb_sub + 1) * 10
+```
+
+```{r}
+datacomb_sub_log2 <- log10(datacomb_sub2)
+```
+
+```{r}
+p_cor <- ggpairs(
+  datacomb_sub_log2,
+  upper = list(continuous = wrap("points", alpha = 0.2, size = 0.5)),
+  lower = list(continuous = "cor")
+)
+
+print(p_cor)
+```
+

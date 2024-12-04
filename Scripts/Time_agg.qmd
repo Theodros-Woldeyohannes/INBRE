@@ -1,0 +1,184 @@
+---
+title: "Time_agg"
+author: "Theodros Woldeyohannes"
+format: html
+editor: visual
+---
+
+```{r}
+library(lubridate)
+library(dplyr)
+library(tidyverse)
+library(plyr)
+```
+
+```{r}
+GC1 <- read.csv("GC-1 0-Minute Average.csv")
+GC2 <- read.csv("GC-2 0-Minute Average.csv")
+GC3 <- read.csv("GC-3 0-Minute Average.csv")
+GC4 <- read.csv("GC-4 0-Minute Average.csv")
+GC5 <- read.csv("GC-5 0-Minute Average.csv")
+GC6 <- read.csv("GC-6 0-Minute Average.csv")
+GC7 <- read.csv("GC-7 0-Minute Average.csv")
+GC8 <- read.csv("GC-8 0-Minute Average.csv")
+GC9 <- read.csv("GC-9 0-Minute Average.csv")
+GC10 <- read.csv("GC-10 0-Minute Average.csv")
+```
+
+```{r}
+GC1$Date <- ymd_hms(GC1$time_stamp)
+GC2$Date <- ymd_hms(GC2$time_stamp)
+GC3$Date <- ymd_hms(GC3$time_stamp)
+GC4$Date <- ymd_hms(GC4$time_stamp)
+GC5$Date <- ymd_hms(GC5$time_stamp)
+GC6$Date <- ymd_hms(GC6$time_stamp)
+GC7$Date <- ymd_hms(GC7$time_stamp)
+GC8$Date <- ymd_hms(GC8$time_stamp)
+GC9$Date <- ymd_hms(GC9$time_stamp)
+GC10$Date <- ymd_hms(GC10$time_stamp)
+```
+
+```{r}
+GC1_1hr <- GC1 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC2_1hr <- GC2 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC3_1hr <- GC3 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC4_1hr <- GC4 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC5_1hr <- GC5 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC6_1hr <- GC6 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC7_1hr <- GC7 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC8_1hr <- GC8 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC9_1hr <- GC9 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC10_1hr <- GC10 %>%
+  group_by(time = floor_date(Date, '1 hour')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+```
+
+```{r}
+write.csv(GC1_1hr, "GC1_1hr.csv")
+write.csv(GC2_1hr, "GC2_1hr.csv")
+write.csv(GC3_1hr, "GC3_1hr.csv")
+write.csv(GC4_1hr, "GC4_1hr.csv")
+write.csv(GC5_1hr, "GC5_1hr.csv")
+write.csv(GC6_1hr, "GC6_1hr.csv")
+write.csv(GC7_1hr, "GC7_1hr.csv")
+write.csv(GC8_1hr, "GC8_1hr.csv")
+write.csv(GC9_1hr, "GC9_1hr.csv")
+write.csv(GC10_1hr, "GC10_1hr.csv")
+```
+
+```{r}
+GC1_24hr <- GC1 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC2_24hr <- GC2 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC3_24hr <- GC3 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC4_24hr <- GC4 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC5_24hr <- GC5 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC6_24hr <- GC6 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC7_24hr <- GC7 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC8_24hr <- GC8 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC9_24hr <- GC9 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+GC10_24hr <- GC10 %>%
+  group_by(time = floor_date(Date, '1 day')) %>%
+  summarize(humidity = mean(humidity), temperature = mean(temperature), pressure = mean(pressure), voc = mean(voc), pm1.0_atm = mean(pm1.0_atm), 
+            pm2.5_atm = mean(pm2.5_atm), pm10.0_atm = mean(pm10.0_atm))
+
+```
+
+```{r}
+write.csv(GC1_24hr, "GC1_24hr.csv")
+write.csv(GC2_24hr, "GC2_24hr.csv")
+write.csv(GC3_24hr, "GC3_24hr.csv")
+write.csv(GC4_24hr, "GC4_24hr.csv")
+write.csv(GC5_24hr, "GC5_24hr.csv")
+write.csv(GC6_24hr, "GC6_24hr.csv")
+write.csv(GC7_24hr, "GC7_24hr.csv")
+write.csv(GC8_24hr, "GC8_24hr.csv")
+write.csv(GC9_24hr, "GC9_24hr.csv")
+write.csv(GC10_24hr, "GC10_24hr.csv")
+
+```
+
+```{r}
+datlist <- list(GC1, GC2, GC3, GC4, GC5, GC6, GC7, GC8, GC9, GC10)
+```
+
+```{r}
+lapply(datlist, function(x) sapply(x, summary))
+```
+```{r}
+ldply(datlist, function(x) sapply(x, summary))
+```
+
